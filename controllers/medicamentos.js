@@ -1,6 +1,6 @@
 const { response } = require("express");
 const { MongoClient } = require('mongodb');
-const { get } = require("../routes/medicamentos.routes");
+
 
 const client = new MongoClient(process.env.MONGO_URI);
 
@@ -26,7 +26,6 @@ async function obtenerDatos(req, res=response) {
         console.log('Error al obtener la conexion');
     }
 }
-
 //Listar los proveedores con su información de contacto en medicamentos.
 async function obternerProveedores(req, res= response) {
     try {
@@ -49,15 +48,27 @@ async function MedicamentosCompProvA(req, res = response) {
         console.log('Error al obtener los datos');
     }
 }
-//Obtener recetas médicas emitidas después del 1 de enero de 2023.
-async function recetas (req,res=response){
+//Medicamentos que caducan antes del 1 de enero de 2024
+async function caducidaMed(req,res = response) {
     try {
-        const collection = await getCollection('Medicamentos');
-        const documentos = await collection.find({fechaExpiracion})
+        const fecha1 = new Date("2024-01-01T00:00:00.000+00:00")
+        const collection = await getCollection('Medicamentos')
+        const documentos = await collection.find({"fechaExpiracion":{$lt:fecha1}}).toArray()
         res.json(documentos)
     } catch (error) {
         console.log(error);
-        console.log('Error al obtener los datos');
+        console.log('Error al obtener datos');
     }
 }
-module.exports = { obtenerDatos,obternerProveedores,MedicamentosCompProvA,recetas };
+//Total de medicamentos vendidos por cada proveedor.
+async function totalVentasVen(req, res=response) {
+    try {
+        const collection= await getCollection('Medicamentos')
+        const documentos = await collection.find()
+        res.json(documentos)
+    } catch (error) {
+        
+    }
+}
+
+module.exports = { obtenerDatos,obternerProveedores,MedicamentosCompProvA,getCollection,caducidaMed};

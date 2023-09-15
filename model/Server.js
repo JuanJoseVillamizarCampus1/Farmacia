@@ -1,6 +1,8 @@
 const expres = require('express')
-const {dbconnection} = require('../database/config')
+//const {dbconnection} = require('../database/config')
 const routerMedi = require('../routes/medicamentos.routes')
+const routesVent = require('../routes/ventas.routes')
+const routerCom = require('../routes/compras.routes')
 class Server{
     constructor(){
         this.app = expres()
@@ -8,7 +10,9 @@ class Server{
         this.middlewares()
         // this.connectDb()
         this.path={
-            medicamentos:'/api/medicamentos'
+            medicamentos:'/api/medicamentos',
+            ventas:'/api/ventas',
+            compras : '/api/compras'
         }
         this.routes()
     }
@@ -19,7 +23,9 @@ class Server{
         this.app.use(expres.json())
     }
     routes(){
-        this.app.use(this.path.medicamentos,routerMedi)
+        this.app.use(this.path.medicamentos,routerMedi);
+        this.app.use(this.path.ventas,routesVent);
+        this.app.use(this.path.compras,routerCom);
     }
     listen(){
         this.app.listen(this.port,()=>{
